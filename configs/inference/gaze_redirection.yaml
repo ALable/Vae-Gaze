@@ -1,0 +1,88 @@
+# Gaze Redirection Inference Configuration
+# 注视角度重定向推理配置文件
+
+exp_name: 'gaze_redirection_inference'
+output_dir: './output/gaze_redirection/'
+unet_sub_folder: musetalk
+vae_type: "sd-vae"
+pretrained_model_name_or_path: "./models"
+
+# Model parameters
+model_params:
+  # GazeNet MLP parameters
+  gazenet_params:
+    num_layers: 4           # Number of MLP layers
+    num_in: 2              # Input dimension (pitch, yaw)
+    num_hidden: 128        # Hidden layer dimension
+
+  # Discriminator parameters (for reference, not used in inference)
+  discriminator_params:
+    scales: [1]
+    block_expansion: 32
+    max_features: 512
+    num_blocks: 4
+    sn: True
+    image_channel: 3
+    estimate_jacobian: False
+
+# Loss parameters (for reference, not used in inference)
+loss_params:
+  l1_loss: 1.0
+  vgg_loss: 0.01
+  vgg_layer_weight: [1, 1, 1, 1, 1]
+  pyramid_scale: [1, 0.5, 0.25, 0.125]
+  gan_loss: 0.01
+  fm_loss: [1.0, 1.0, 1.0, 1.0]
+  eye_gan_loss: 0.01
+
+# Data parameters
+data:
+  image_size: 256         # Input image size
+
+# Inference specific parameters
+inference_params:
+  device: "cuda"          # Device for inference
+  batch_size: 1           # Batch size for inference
+  use_predefined_mask: True  # Use predefined eye mask
+  target_gaze: [0.0, 0.0]    # Default target gaze (camera direction)
+
+  # Eye mask parameters
+  eye_mask:
+    mask_path: "eyes_mask.png"  # Path to predefined eye mask
+    generate_if_missing: False   # Generate mask if file not found
+
+# Checkpoint parameters
+checkpoint_params:
+  checkpoint_path: "./checkpoints/latest.pth"
+  load_gaze_mlp: True     # Whether to load GazeNet weights from checkpoint
+  load_unet: True         # Whether to load UNet weights from checkpoint
+
+# Output parameters
+output_params:
+  save_individual_images: True    # Save original, masked, and result separately
+  save_visualization: True        # Save comparison visualization
+  save_eye_mask: True            # Save eye mask visualization
+  output_format: "png"           # Output image format
+  dpi: 150                       # Output image DPI
+
+# Camera direction parameters
+camera_params:
+  # Default camera gaze direction (normalized coordinates)
+  pitch: 0.0              # Camera pitch angle in radians
+  yaw: 0.0                # Camera yaw angle in radians
+
+  # Gaze direction ranges for validation
+  valid_pitch_range: [-0.5, 0.5]   # Valid pitch range in radians
+  valid_yaw_range: [-0.5, 0.5]     # Valid yaw range in radians
+
+# Processing parameters
+processing_params:
+  normalize_input: True    # Normalize input images to [-1, 1]
+  resize_to_256: True     # Resize input images to 256x256
+  maintain_aspect_ratio: False  # Maintain aspect ratio during resize
+
+# Debugging parameters
+debug_params:
+  verbose: True           # Print detailed information
+  save_intermediate: False # Save intermediate processing results
+  log_gaze_embeddings: False # Log gaze embedding statistics

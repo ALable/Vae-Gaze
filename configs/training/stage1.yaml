@@ -1,0 +1,77 @@
+exp_name: '9-2-gaze'  # Name of the experiment
+output_dir: '/mnt/data/xhy/Logs/Vae-Gaze/logs'  # Directory to save experiment outputs
+unet_sub_folder: unet  # Subfolder name for UNet model
+unet_config_file: "/musetalk.json"
+random_init_unet: True  # Whether to randomly initialize UNet (stage1) or use pretrained weights (stage2)
+pretrained_model_name_or_path: "checkpoints"  # Path to pretrained models
+resume_from_checkpoint: True  # Whether to resume training from a checkpoint
+vae_type: "sd-vae"  # Type of VAE model to use
+
+data:
+  dataset_type: "gaze_hdf"
+  dataset_key: "HDF"  # Dataset to use for training
+  train_bs: 8
+  # h5_path: "/home/xuhy/PycharmProjects/Vae-Gaze/columbia_processed.h5"
+  # hdf_path: "/mnt/data/xhy/preprocess_sted/output_msted256/GazeCapture.h5"
+  # hdf_path: "/mnt/data/xuhy/columbia_processed.h5"
+  # image_size: 256  # Size of input images
+  num_workers: 8  # Number of data loading workers
+
+loss_params:
+  l1_loss: 1.0  # Weight for L1 loss
+  vgg_loss: 0.01  # Weight for VGG perceptual loss
+  vgg_layer_weight: [1, 1, 1, 1, 1]  # Weights for different VGG layers
+  pyramid_scale: [1, 0.5, 0.25, 0.125]  # Scales for image pyramid
+  gan_loss: 0.01  # Weight for GAN loss
+  fm_loss: [1.0, 1.0, 1.0, 1.0]  # Weights for feature matching loss
+  eye_gan_loss: 0.01  # Weight for eye-specific GAN loss
+
+model_params:
+  gazenet_params:
+    num_layers: 4
+    num_in: 2
+    num_hidden: 128
+  discriminator_params:
+    scales: [1]  # Scales for discriminator
+    block_expansion: 32  # Expansion factor for discriminator blocks
+    max_features: 512  # Maximum number of features in discriminator
+    num_blocks: 4  # Number of blocks in discriminator
+    sn: True  # Whether to use spectral normalization
+    image_channel: 3  # Number of image channels
+    estimate_jacobian: False  # Whether to estimate Jacobian
+
+discriminator_train_params:
+  lr: 0.000005  # Learning rate for discriminator
+  eps: 0.00000001  # Epsilon for optimizer
+  weight_decay: 0.01  # Weight decay for optimizer
+  patch_size: 1  # Size of patches for discriminator
+  betas: [0.5, 0.999]  # Beta parameters for Adam optimizer
+  epochs: 10000  # Number of training epochs
+  start_gan: 1000  # Step to start GAN training
+
+solver:
+  gradient_accumulation_steps: 1  # Number of steps for gradient accumulation
+  uncond_steps: 10  # Number of unconditional steps
+  mixed_precision: 'fp16'  # Precision mode for training
+  enable_xformers_memory_efficient_attention: True  # Whether to use memory efficient attention
+  gradient_checkpointing: True  # Whether to use gradient checkpointing
+  max_train_steps: 250000  # Maximum number of training steps
+  max_grad_norm: 1.0  # Maximum gradient norm for clipping
+  # Learning rate parameters
+  learning_rate: 2.0e-5  # Base learning rate
+  scale_lr: False  # Whether to scale learning rate
+  lr_warmup_steps: 1000  # Number of warmup steps for learning rate
+  lr_scheduler: "linear"  # Type of learning rate scheduler
+  # Optimizer parameters
+  use_8bit_adam: False  # Whether to use 8-bit Adam optimizer
+  adam_beta1: 0.5  # Beta1 parameter for Adam optimizer
+  adam_beta2: 0.999  # Beta2 parameter for Adam optimizer
+  adam_weight_decay: 1.0e-2  # Weight decay for Adam optimizer
+  adam_epsilon: 1.0e-8  # Epsilon for Adam optimizer
+
+total_limit: 10  # Maximum number of checkpoints to keep
+save_model_epoch_interval: 250000  # Interval between model saves
+checkpointing_steps: 10000  # Number of steps between checkpoints
+val_freq: 2000  # Frequency of validation
+
+seed: 41  # Random seed for reproducibility
