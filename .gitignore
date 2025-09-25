@@ -1,0 +1,24 @@
+**/__pycache__/
+
+
+
+# exp folder
+**/*.png
+**/*.gif
+/exp_out/
+/finetune/
+/checkpoints/
+/analysis_output/
+/ip_adapter/
+/gaze_estimator/
+*.h5
+# project folder
+/examples/
+/vedio/
+
+/temp/
+/head_rotation/
+
+oneshot_training_ipadapter.py
+oneshot_training_instantid.py
+README_IP_Adapter_Integration.md
